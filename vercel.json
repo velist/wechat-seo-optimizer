@@ -1,7 +1,16 @@
 {
-  "buildCommand": "cd wechat-seo-tool && npm run build",
-  "outputDirectory": "wechat-seo-tool/.next",
-  "installCommand": "cd wechat-seo-tool && npm install",
-  "devCommand": "cd wechat-seo-tool && npm run dev",
-  "framework": "nextjs"
+  "version": 2,
+  "name": "wechat-seo-optimizer",
+  "builds": [
+    {
+      "src": "wechat-seo-tool/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/wechat-seo-tool/$1"
+    }
+  ]
 }
