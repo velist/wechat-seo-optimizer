@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { analyzeTitle } from '@/lib/titleAnalyzer'
 import { TitleAnalysis } from '@/types'
+import { ScoreChart } from '@/components/charts'
 
 export default function OptimizerPage() {
   const [title, setTitle] = useState('')
@@ -139,25 +140,11 @@ export default function OptimizerPage() {
             <div className="space-y-6">
               {/* 评分显示 */}
               {analysis && (
-                <div className="card">
-                  <h2 className="text-xl font-semibold mb-4">评分结果</h2>
-                  <div className="text-center mb-6">
-                    <div className={`text-5xl font-bold mb-2 ${
-                      analysis.score >= 80 ? 'text-green-600' :
-                      analysis.score >= 60 ? 'text-yellow-600' : 'text-red-600'
-                    }`}>
-                      {analysis.score}
-                    </div>
-                    <div className="text-sm text-gray-600">综合评分</div>
-                    <div className={`text-sm font-medium ${
-                      analysis.score >= 80 ? 'text-green-600' :
-                      analysis.score >= 60 ? 'text-yellow-600' : 'text-red-600'
-                    }`}>
-                      {analysis.score >= 80 ? '优秀' :
-                       analysis.score >= 60 ? '良好' : '需要改进'}
-                    </div>
-                  </div>
-                </div>
+                <ScoreChart 
+                  score={analysis.score}
+                  title="标题评分"
+                  subtitle={`${analysis.score >= 80 ? '优秀' : analysis.score >= 60 ? '良好' : '需要改进'} - 长度: ${analysis.length}字符`}
+                />
               )}
 
               {/* 优化版本 */}

@@ -4,10 +4,13 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const navigation = [
-  { name: '首页', href: '/' },
-  { name: '标题优化', href: '/optimizer' },
-  { name: '内容分析', href: '/analyzer' },
-  { name: '关键词研究', href: '/keywords' },
+  { name: '首页', href: '/', icon: '🏠' },
+  { name: '标题优化', href: '/optimizer', icon: '📝' },
+  { name: '内容分析', href: '/analyzer', icon: '📊' },
+  { name: '关键词研究', href: '/keywords', icon: '🔍' },
+  { name: '热点追踪', href: '/trending', icon: '🔥' },
+  { name: '排版美化', href: '/formatter', icon: '🎨' },
+  { name: '数据分析', href: '/analytics', icon: '📈' },
 ]
 
 export default function Header() {
@@ -23,18 +26,19 @@ export default function Header() {
             </Link>
           </div>
           
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex space-x-6">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
+                className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
                   pathname === item.href
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-600 hover:text-blue-600'
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
                 }`}
               >
-                {item.name}
+                <span>{item.icon}</span>
+                <span>{item.name}</span>
               </Link>
             ))}
           </nav>

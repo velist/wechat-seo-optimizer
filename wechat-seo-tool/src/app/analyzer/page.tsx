@@ -16,9 +16,9 @@ export default function AnalyzerPage() {
     
     setIsAnalyzing(true)
     
-    setTimeout(() => {
+    setTimeout(async () => {
       const keywordList = keywords.split(',').map(k => k.trim()).filter(k => k)
-      const contentResult = analyzeContent(content, keywordList)
+      const contentResult = await analyzeContent(content, keywordList)
       const seoResult = calculateSEOScore(85, contentResult.score, 75)
       
       setAnalysis(contentResult)
