@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd wechat-seo-tool && npm run build",
+  "outputDirectory": "wechat-seo-tool/.next",
+  "installCommand": "cd wechat-seo-tool && npm install",
+  "devCommand": "cd wechat-seo-tool && npm run dev",
+  "framework": "nextjs"
+}
