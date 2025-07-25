@@ -19,19 +19,22 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
+        cache-dependency-path: 'wechat-seo-tool/package-lock.json'
         
     - name: Install dependencies
       run: npm ci
+      working-directory: ./wechat-seo-tool
       
     - name: Build project
       run: npm run build
+      working-directory: ./wechat-seo-tool
       
     - name: Add .nojekyll file
-      run: touch out/.nojekyll
+      run: touch wechat-seo-tool/out/.nojekyll
       
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       if: github.ref == 'refs/heads/master'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./out
+        publish_dir: ./wechat-seo-tool/out
