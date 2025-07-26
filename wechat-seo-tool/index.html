@@ -396,5 +396,335 @@
             </div>
         </div>
     </footer>
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeForm();
+            initializeButtons();
+            initializeNavigation();
+        });
+
+        // 初始化快速开始表单
+        function initializeForm() {
+            const titleInput = document.querySelector('input[placeholder="请输入您的文章标题..."]');
+            const keywordsInput = document.querySelector('input[placeholder="请输入目标关键词，用逗号分隔..."]');
+            const contentTextarea = document.querySelector('textarea[placeholder="请粘贴您的文章内容..."]');
+            const analyzeButton = document.querySelector('.bg-blue-500.hover\\:bg-blue-600');
+
+            // 输入验证和按钮状态更新
+            function updateButtonState() {
+                const hasTitle = titleInput.value.trim().length > 0;
+                const hasKeywords = keywordsInput.value.trim().length > 0;
+                
+                if (hasTitle && hasKeywords) {
+                    analyzeButton.disabled = false;
+                    analyzeButton.className = analyzeButton.className.replace('bg-gray-300', 'bg-blue-500 hover:bg-blue-600');
+                } else {
+                    analyzeButton.disabled = true;
+                    analyzeButton.className = analyzeButton.className.replace('bg-blue-500 hover:bg-blue-600', 'bg-gray-300');
+                }
+            }
+
+            // 绑定输入事件
+            titleInput.addEventListener('input', updateButtonState);
+            keywordsInput.addEventListener('input', updateButtonState);
+
+            // 绑定分析按钮点击事件
+            analyzeButton.addEventListener('click', function() {
+                if (!analyzeButton.disabled) {
+                    performAnalysis();
+                }
+            });
+        }
+
+        // 执行SEO分析
+        function performAnalysis() {
+            const titleInput = document.querySelector('input[placeholder="请输入您的文章标题..."]');
+            const keywordsInput = document.querySelector('input[placeholder="请输入目标关键词，用逗号分隔..."]');
+            const contentTextarea = document.querySelector('textarea[placeholder="请粘贴您的文章内容..."]');
+
+            const title = titleInput.value.trim();
+            const keywords = keywordsInput.value.trim().split(',').map(k => k.trim()).filter(k => k);
+            const content = contentTextarea.value.trim();
+
+            // 显示分析结果
+            showAnalysisResults(title, keywords, content);
+        }
+
+        // 显示分析结果
+        function showAnalysisResults(title, keywords, content) {
+            // 计算基本SEO评分
+            const seoScore = calculateSEOScore(title, keywords, content);
+            
+            // 创建结果显示区域
+            const resultsHTML = `
+                <div id="analysis-results" class="card max-w-4xl mx-auto mt-8">
+                    <h3 class="text-2xl font-bold mb-6">📊 SEO分析结果</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">📝 标题分析</h4>
+                            <p class="text-sm text-gray-600 mb-2">标题: "${title}"</p>
+                            <p class="text-sm">长度: ${title.length} 字符 ${title.length >= 10 && title.length <= 30 ? '✅ 良好' : '⚠️ 建议10-30字符'}</p>
+                            <div class="mt-2">
+                                <div class="text-sm text-gray-600">标题评分</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: ${seoScore.title}%"></div>
+                                </div>
+                                <span class="text-sm font-medium">${seoScore.title}/100</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">🔍 关键词分析</h4>
+                            <p class="text-sm text-gray-600 mb-2">关键词: ${keywords.join(', ')}</p>
+                            <p class="text-sm">数量: ${keywords.length} 个 ${keywords.length >= 2 && keywords.length <= 5 ? '✅ 良好' : '⚠️ 建议2-5个'}</p>
+                            <div class="mt-2">
+                                <div class="text-sm text-gray-600">关键词评分</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-600 h-2 rounded-full" style="width: ${seoScore.keywords}%"></div>
+                                </div>
+                                <span class="text-sm font-medium">${seoScore.keywords}/100</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-purple-50 p-4 rounded-lg mb-6">
+                        <h4 class="font-semibold mb-2">📈 综合评分</h4>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-3xl font-bold ${seoScore.overall >= 80 ? 'text-green-600' : seoScore.overall >= 60 ? 'text-yellow-600' : 'text-red-600'}">${seoScore.overall}</div>
+                            <div class="flex-1">
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="h-3 rounded-full ${seoScore.overall >= 80 ? 'bg-green-600' : seoScore.overall >= 60 ? 'bg-yellow-600' : 'bg-red-600'}" style="width: ${seoScore.overall}%"></div>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">${seoScore.overall >= 80 ? '优秀' : seoScore.overall >= 60 ? '良好' : '需要优化'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-3">💡 优化建议</h4>
+                        <ul class="text-sm space-y-2">
+                            ${generateOptimizationTips(title, keywords, content)}
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-center space-x-4">
+                        <button onclick="document.getElementById('analysis-results').remove()" class="btn-secondary">关闭结果</button>
+                        <button onclick="exportResults()" class="btn-primary">导出报告</button>
+                    </div>
+                </div>
+            `;
+            
+            // 插入结果到页面
+            const existingResults = document.getElementById('analysis-results');
+            if (existingResults) {
+                existingResults.remove();
+            }
+            
+            const quickStartCard = document.querySelector('.card.max-w-4xl.mx-auto.mb-8');
+            quickStartCard.insertAdjacentHTML('afterend', resultsHTML);
+            
+            // 滚动到结果区域
+            document.getElementById('analysis-results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 计算SEO评分
+        function calculateSEOScore(title, keywords, content) {
+            let titleScore = 0;
+            let keywordsScore = 0;
+            
+            // 标题评分
+            if (title.length >= 10 && title.length <= 30) titleScore += 30;
+            if (title.length >= 15 && title.length <= 25) titleScore += 20;
+            
+            // 检查关键词在标题中的出现
+            let titleKeywordCount = 0;
+            keywords.forEach(keyword => {
+                if (title.includes(keyword)) titleKeywordCount++;
+            });
+            titleScore += Math.min(titleKeywordCount * 25, 50);
+            
+            // 关键词评分
+            if (keywords.length >= 2 && keywords.length <= 5) keywordsScore += 40;
+            if (keywords.length === 3 || keywords.length === 4) keywordsScore += 20;
+            
+            // 关键词长度检查
+            const avgKeywordLength = keywords.reduce((sum, k) => sum + k.length, 0) / keywords.length;
+            if (avgKeywordLength >= 2 && avgKeywordLength <= 6) keywordsScore += 40;
+            
+            const overall = Math.round((titleScore + keywordsScore) / 2);
+            
+            return {
+                title: Math.min(titleScore, 100),
+                keywords: Math.min(keywordsScore, 100),
+                overall: Math.min(overall, 100)
+            };
+        }
+
+        // 生成优化建议
+        function generateOptimizationTips(title, keywords, content) {
+            const tips = [];
+            
+            if (title.length < 10) {
+                tips.push('<li>• 标题过短，建议扩展到10-30个字符</li>');
+            } else if (title.length > 30) {
+                tips.push('<li>• 标题过长，建议精简到30字符以内</li>');
+            }
+            
+            if (keywords.length < 2) {
+                tips.push('<li>• 关键词数量过少，建议添加2-5个相关关键词</li>');
+            } else if (keywords.length > 5) {
+                tips.push('<li>• 关键词数量过多，建议精简到5个以内</li>');
+            }
+            
+            let titleHasKeywords = false;
+            keywords.forEach(keyword => {
+                if (title.includes(keyword)) titleHasKeywords = true;
+            });
+            
+            if (!titleHasKeywords) {
+                tips.push('<li>• 建议在标题中包含至少一个主要关键词</li>');
+            }
+            
+            if (content.length > 0 && content.length < 100) {
+                tips.push('<li>• 内容过短，建议增加更多有价值的内容</li>');
+            }
+            
+            if (tips.length === 0) {
+                tips.push('<li>• 🎉 恭喜！您的内容SEO优化程度良好</li>');
+                tips.push('<li>• 建议定期更新内容保持活跃度</li>');
+            }
+            
+            return tips.join('');
+        }
+
+        // 导出结果
+        function exportResults() {
+            alert('报告导出功能开发中...');
+        }
+
+        // 初始化按钮事件
+        function initializeButtons() {
+            // 使用教程按钮
+            document.querySelector('.btn-secondary').addEventListener('click', function() {
+                showTutorial();
+            });
+            
+            // 立即体验按钮
+            document.querySelector('.btn-primary.text-sm').addEventListener('click', function() {
+                // 滚动到快速开始区域
+                document.querySelector('.card.max-w-4xl.mx-auto.mb-8').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // AI功能按钮
+            document.querySelector('.text-orange-600').addEventListener('click', function() {
+                toggleAIFeature();
+            });
+        }
+
+        // 显示使用教程
+        function showTutorial() {
+            const tutorialHTML = `
+                <div id="tutorial-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg p-6 max-w-2xl mx-4 max-h-96 overflow-y-auto">
+                        <h3 class="text-xl font-bold mb-4">📚 使用教程</h3>
+                        <div class="space-y-4 text-sm">
+                            <div>
+                                <h4 class="font-semibold">1. 输入文章标题</h4>
+                                <p class="text-gray-600">在标题框中输入您的公众号文章标题，建议10-30个字符。</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">2. 设置目标关键词</h4>
+                                <p class="text-gray-600">输入2-5个相关关键词，用逗号分隔，这些词应该与您的目标受众搜索习惯匹配。</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">3. 添加文章内容（可选）</h4>
+                                <p class="text-gray-600">粘贴完整的文章内容可以获得更准确的分析结果。</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">4. 开始分析</h4>
+                                <p class="text-gray-600">点击"开始分析优化"按钮，系统将为您生成详细的SEO报告和优化建议。</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-center">
+                            <button onclick="document.getElementById('tutorial-modal').remove()" class="btn-primary">知道了</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', tutorialHTML);
+        }
+
+        // 切换AI功能
+        function toggleAIFeature() {
+            const button = document.querySelector('.text-orange-600');
+            const indicator = button.querySelector('.bg-orange-400');
+            
+            if (button.textContent.includes('启用')) {
+                button.innerHTML = `
+                    <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span>AI功能已启用</span>
+                `;
+                button.className = button.className.replace('text-orange-600 hover:text-orange-800 border-orange-200 hover:bg-orange-50', 'text-green-600 hover:text-green-800 border-green-200 hover:bg-green-50');
+            } else {
+                button.innerHTML = `
+                    <div class="w-2 h-2 bg-orange-400 rounded-full"></div>
+                    <span>启用AI功能</span>
+                `;
+                button.className = button.className.replace('text-green-600 hover:text-green-800 border-green-200 hover:bg-green-50', 'text-orange-600 hover:text-orange-800 border-orange-200 hover:bg-orange-50');
+            }
+        }
+
+        // 初始化导航
+        function initializeNavigation() {
+            // 为导航链接添加点击事件
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const href = this.getAttribute('href');
+                    
+                    if (href === '/') {
+                        // 首页，滚动到顶部
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        // 其他页面，显示开发中提示
+                        showComingSoon(this.textContent);
+                    }
+                });
+            });
+            
+            // 为功能卡片按钮添加点击事件
+            const cardButtons = document.querySelectorAll('.card .btn-primary');
+            cardButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const cardTitle = this.closest('.card').querySelector('h3').textContent;
+                    showComingSoon(cardTitle);
+                });
+            });
+        }
+
+        // 显示开发中提示
+        function showComingSoon(featureName) {
+            const modalHTML = `
+                <div id="coming-soon-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">🚧</div>
+                            <h3 class="text-xl font-bold mb-2">${featureName}</h3>
+                            <p class="text-gray-600 mb-4">此功能正在开发中，敬请期待！</p>
+                            <p class="text-sm text-gray-500 mb-6">目前您可以使用首页的快速分析功能体验基础的SEO优化建议。</p>
+                            <button onclick="document.getElementById('coming-soon-modal').remove()" class="btn-primary">我知道了</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+    </script>
 </body>
 </html>
